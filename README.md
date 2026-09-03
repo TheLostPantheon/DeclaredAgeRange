@@ -115,9 +115,24 @@ dotnet build samples/iOSSampleApp -t:Run
 dotnet build samples/iOSSampleApp -t:Run -r ios-arm64
 ```
 
+## Using the package locally (before it is on nuget.org)
+
+Pack it into a folder and point your app at that folder as a NuGet source:
+
+```bash
+# in this repo
+dotnet pack src/DeclaredAgeRange -c Release -o ~/nuget-local -p:Version=1.0.0-local.1
+
+# in the consuming app (once)
+dotnet nuget add source ~/nuget-local --name local
+dotnet add package DeclaredAgeRange --prerelease
+```
+
+Bump the `-local.N` suffix each time you repack. NuGet caches packages by version, so repacking the same version silently keeps the old bits unless you also run `dotnet nuget locals all --clear`.
+
 ## Releasing
 
-CI builds and packs on every push. Pushing a tag `vX.Y.Z` builds the package with that version and publishes it to nuget.org, using the `NUGET_API_KEY` repository secret.
+CI builds and packs on every push. Pushing a tag `vX.Y.Z` builds the package with that version and publishes it to nuget.org, using the `NUGET_API_KEY` secret in the `nuget` environment. Until that secret exists the publish job simply fails, so tagging is safe to try.
 
 ```bash
 git tag v1.0.0 && git push --tags
