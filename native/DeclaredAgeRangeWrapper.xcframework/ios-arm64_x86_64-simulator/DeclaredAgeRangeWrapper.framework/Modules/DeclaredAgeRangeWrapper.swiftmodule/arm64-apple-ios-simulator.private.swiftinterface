@@ -1,0 +1,74 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.3.3 effective-5.10 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)
+// swift-module-flags: -target arm64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -O -enable-upcoming-feature DisableOutwardActorInference -enable-upcoming-feature InferSendableFromCaptures -enable-upcoming-feature GlobalActorIsolatedTypesUsability -enable-upcoming-feature MemberImportVisibility -enable-upcoming-feature InferIsolatedConformances -enable-upcoming-feature NonisolatedNonsendingByDefault -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name DeclaredAgeRangeWrapper
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface -formal-cxx-interoperability-mode=off -interface-compiler-version 6.3.3
+import DeclaredAgeRange
+import Foundation
+import Swift
+import UIKit
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+public typealias DARPlatformAnchor = UIKit.UIViewController
+@objc(DARAgeRangeDeclaration) public enum DARAgeRangeDeclaration : Swift.Int {
+  case none = 0
+  case selfDeclared = 1
+  case guardianDeclared = 2
+  case confirmed = 3
+  case unknown = 4
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc(DARAgeRangeResponseType) public enum DARAgeRangeResponseType : Swift.Int {
+  case sharing = 0
+  case declinedSharing = 1
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc(DARAgeRangeErrorCode) public enum DARAgeRangeErrorCode : Swift.Int {
+  case unknown = 0
+  case notAvailable = 1
+  case invalidRequest = 2
+  case invalidAccount = 3
+  case declinedOnboarding = 4
+  case network = 5
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+public let DARAgeRangeErrorDomain: Swift.String
+@objc(DARAgeRange) public class DARAgeRange : ObjectiveC.NSObject {
+  @objc final public let lowerBound: Foundation.NSNumber?
+  @objc final public let upperBound: Foundation.NSNumber?
+  @objc final public let ageRangeDeclaration: DeclaredAgeRangeWrapper.DARAgeRangeDeclaration
+  @objc public init(lowerBound: Foundation.NSNumber?, upperBound: Foundation.NSNumber?, ageRangeDeclaration: DeclaredAgeRangeWrapper.DARAgeRangeDeclaration)
+  @objc deinit
+}
+@objc(DARAgeRangeResponse) public class DARAgeRangeResponse : ObjectiveC.NSObject {
+  @objc final public let type: DeclaredAgeRangeWrapper.DARAgeRangeResponseType
+  @objc final public let ageRange: DeclaredAgeRangeWrapper.DARAgeRange?
+  @objc public init(type: DeclaredAgeRangeWrapper.DARAgeRangeResponseType, ageRange: DeclaredAgeRangeWrapper.DARAgeRange?)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc(DARAgeRangeService) public class DARAgeRangeService : ObjectiveC.NSObject {
+  @objc public static func requestAgeRange(ageGate: Swift.Int, secondAgeGate: Foundation.NSNumber?, thirdAgeGate: Foundation.NSNumber?, in anchor: DeclaredAgeRangeWrapper.DARPlatformAnchor, completion: @escaping (DeclaredAgeRangeWrapper.DARAgeRangeResponse?, Foundation.NSError?) -> Swift.Void)
+  @objc override dynamic public init()
+  @objc deinit
+}
+extension DeclaredAgeRangeWrapper.DARAgeRangeDeclaration : Swift.Equatable {}
+extension DeclaredAgeRangeWrapper.DARAgeRangeDeclaration : Swift.Hashable {}
+extension DeclaredAgeRangeWrapper.DARAgeRangeDeclaration : Swift.RawRepresentable {}
+extension DeclaredAgeRangeWrapper.DARAgeRangeResponseType : Swift.Equatable {}
+extension DeclaredAgeRangeWrapper.DARAgeRangeResponseType : Swift.Hashable {}
+extension DeclaredAgeRangeWrapper.DARAgeRangeResponseType : Swift.RawRepresentable {}
+extension DeclaredAgeRangeWrapper.DARAgeRangeErrorCode : Swift.Equatable {}
+extension DeclaredAgeRangeWrapper.DARAgeRangeErrorCode : Swift.Hashable {}
+extension DeclaredAgeRangeWrapper.DARAgeRangeErrorCode : Swift.RawRepresentable {}

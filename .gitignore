@@ -8,9 +8,8 @@ artifacts/
 .vs/
 .idea/
 
-# Native build output (`make -C native`)
+# Native build intermediates (`make -C native`). The resulting xcframework IS committed.
 native/build/
-*.xcframework
 xcuserdata/
 
 # macOS
