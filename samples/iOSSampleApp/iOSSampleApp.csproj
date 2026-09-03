@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0-ios</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>true</ImplicitUsings>
+        <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
+        <TrimMode Condition="'$(Configuration)' == 'Release'">full</TrimMode>
+    </PropertyGroup>
+
+    <!--
+      Simulator builds are signed ad-hoc so `dotnet build` works without a certificate.
+      Entitlements.plist only matters on a physical device, where .NET picks your development
+      identity automatically. This must be a target: the default RuntimeIdentifier is set after
+      the project body is evaluated, and the SDK snapshots CodesignKey into _SpecifiedCodesignKey.
+    -->
+    <Target Name="UseAdHocSigningOnSimulator" BeforeTargets="_DetectSigningIdentity"
+            Condition="$(RuntimeIdentifier.StartsWith('iossimulator')) And '$(CodesignKey)' == ''">
+      <PropertyGroup>
+        <CodesignKey>-</CodesignKey>
+        <_SpecifiedCodesignKey>-</_SpecifiedCodesignKey>
+      </PropertyGroup>
+    </Target>
+
+    <ItemGroup>
+      <!-- In your own app use: <PackageReference Include="DeclaredAgeRange" Version="1.0.0" /> -->
+      <ProjectReference Include="..\..\src\DeclaredAgeRange\DeclaredAgeRange.csproj" />
+    </ItemGroup>
+</Project>

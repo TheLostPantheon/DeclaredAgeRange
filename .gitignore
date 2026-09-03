@@ -1,0 +1,17 @@
+# .NET
+bin/
+obj/
+artifacts/
+*.nupkg
+*.snupkg
+*.user
+.vs/
+.idea/
+
+# Native build output (`make -C native`)
+native/build/
+*.xcframework
+xcuserdata/
+
+# macOS
+.DS_Store

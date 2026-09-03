@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclaredAgeRange", "src\DeclaredAgeRange\DeclaredAgeRange.csproj", "{3B7E2C4A-6D1F-4F0B-9C2E-7A5D8E1F6B21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iOSSampleApp", "samples\iOSSampleApp\iOSSampleApp.csproj", "{8496E611-D8E4-485D-B7ED-449CECF81478}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3B7E2C4A-6D1F-4F0B-9C2E-7A5D8E1F6B21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B7E2C4A-6D1F-4F0B-9C2E-7A5D8E1F6B21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B7E2C4A-6D1F-4F0B-9C2E-7A5D8E1F6B21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B7E2C4A-6D1F-4F0B-9C2E-7A5D8E1F6B21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8496E611-D8E4-485D-B7ED-449CECF81478}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8496E611-D8E4-485D-B7ED-449CECF81478}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8496E611-D8E4-485D-B7ED-449CECF81478}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8496E611-D8E4-485D-B7ED-449CECF81478}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

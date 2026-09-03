@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net10.0-ios;net10.0-macos;net9.0-ios;net9.0-macos</TargetFrameworks>
+        <IsBindingProject>true</IsBindingProject>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>true</ImplicitUsings>
+        <LangVersion>latest</LangVersion>
+        <IsTrimmable>true</IsTrimmable>
+        <RootNamespace>DeclaredAgeRange</RootNamespace>
+        <AssemblyName>DeclaredAgeRange</AssemblyName>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+        <!-- NuGet package. Version is overridden by CI from the git tag (v1.2.3 -> 1.2.3). -->
+        <PackageId>DeclaredAgeRange</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>TheLostPantheon</Authors>
+        <Description>.NET binding for Apple's Declared Age Range API (iOS 26+ / macOS 26+). Request a user's age range with a single async call.</Description>
+        <PackageTags>ios;macos;apple;declared-age-range;age-verification;binding</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageProjectUrl>https://github.com/TheLostPantheon/DeclaredAgeRange</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/TheLostPantheon/DeclaredAgeRange</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+
+        <!-- Source Link + symbols so consumers can step into the managed layer. -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <!-- Minimum OS the *package* runs on. The API itself needs OS 26; AgeRangeService.IsSupported tells you at runtime. -->
+    <PropertyGroup Condition="$(TargetFramework.EndsWith('-ios'))">
+        <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition="$(TargetFramework.EndsWith('-macos'))">
+        <SupportedOSPlatformVersion>11.0</SupportedOSPlatformVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ObjcBindingApiDefinition Include="ApiDefinition.cs" />
+        <ObjcBindingCoreSource Include="StructsAndEnums.cs" />
+        <Compile Remove="ApiDefinition.cs;StructsAndEnums.cs" />
+
+        <!-- Swift bridge built by `make -C native`. Packed into the nupkg automatically. -->
+        <NativeReference Include="../../native/DeclaredAgeRangeWrapper.xcframework">
+            <Kind>Framework</Kind>
+            <SmartLink>true</SmartLink>
+            <!-- Apple's framework only exists on OS 26+, so it must be weak-linked for apps with a lower minimum OS. -->
+            <WeakFrameworks>DeclaredAgeRange</WeakFrameworks>
+        </NativeReference>
+
+        <None Include="README.md" Pack="true" PackagePath="/" />
+    </ItemGroup>
+</Project>
