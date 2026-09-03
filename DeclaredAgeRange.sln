@@ -3,6 +3,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclaredAgeRange", "src\Dec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iOSSampleApp", "samples\iOSSampleApp\iOSSampleApp.csproj", "{8496E611-D8E4-485D-B7ED-449CECF81478}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "macOSSampleApp", "samples\macOSSampleApp\macOSSampleApp.csproj", "{C2D4E6F8-1A3B-4C5D-8E7F-9A0B1C2D3E4F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeclaredAgeRange.Tests", "tests\DeclaredAgeRange.Tests\DeclaredAgeRange.Tests.csproj", "{D5E6F7A8-2B3C-4D5E-9F0A-1B2C3D4E5F60}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,5 +21,13 @@ Global
 		{8496E611-D8E4-485D-B7ED-449CECF81478}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8496E611-D8E4-485D-B7ED-449CECF81478}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8496E611-D8E4-485D-B7ED-449CECF81478}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2D4E6F8-1A3B-4C5D-8E7F-9A0B1C2D3E4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2D4E6F8-1A3B-4C5D-8E7F-9A0B1C2D3E4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2D4E6F8-1A3B-4C5D-8E7F-9A0B1C2D3E4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2D4E6F8-1A3B-4C5D-8E7F-9A0B1C2D3E4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5E6F7A8-2B3C-4D5E-9F0A-1B2C3D4E5F60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5E6F7A8-2B3C-4D5E-9F0A-1B2C3D4E5F60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5E6F7A8-2B3C-4D5E-9F0A-1B2C3D4E5F60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5E6F7A8-2B3C-4D5E-9F0A-1B2C3D4E5F60}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

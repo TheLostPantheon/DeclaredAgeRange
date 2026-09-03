@@ -42,8 +42,14 @@ jobs:
       - name: Pack DeclaredAgeRange
         run: dotnet pack src/DeclaredAgeRange -c Release -o artifacts -p:Version=${{ steps.version.outputs.value }}
 
-      - name: Build sample app (simulator, ad-hoc signed)
+      - name: Unit tests (pure managed logic)
+        run: dotnet test tests/DeclaredAgeRange.Tests -c Release
+
+      - name: Build iOS sample (simulator, ad-hoc signed)
         run: dotnet build samples/iOSSampleApp -c Debug -r iossimulator-arm64
+
+      - name: Build macOS sample (ad-hoc signed)
+        run: dotnet build samples/macOSSampleApp -c Debug
 
       - name: Upload NuGet package
         uses: actions/upload-artifact@v4

@@ -19,9 +19,6 @@ namespace DeclaredAgeRange;
 /// </remarks>
 public static class AgeRangeService
 {
-    /// <summary>NSError domain used by the native bridge. Codes map 1:1 to <see cref="AgeRangeError"/>.</summary>
-    internal const string ErrorDomain = "DARAgeRangeErrorDomain";
-
     /// <summary>
     /// True when a request can succeed on this device: iOS 26+ / macOS 26+ on real hardware.
     /// Always false on the iOS Simulator, where Apple's service reports <see cref="AgeRangeError.NotAvailable"/>.
@@ -121,19 +118,10 @@ public static class AgeRangeService
             var range = new AgeRange(
                 native.LowerBound?.Int32Value,
                 native.UpperBound?.Int32Value,
-                ToManaged(native.AgeRangeDeclaration));
+                NativeMapping.ToDeclaration(native.AgeRangeDeclaration));
             return new AgeRangeResponse.Sharing(range);
         }
 
         return AgeRangeResponse.DeclinedSharing.Instance;
     }
-
-    static AgeRangeDeclaration? ToManaged(DARAgeRangeDeclaration declaration) => declaration switch
-    {
-        DARAgeRangeDeclaration.None => null,
-        DARAgeRangeDeclaration.SelfDeclared => AgeRangeDeclaration.SelfDeclared,
-        DARAgeRangeDeclaration.GuardianDeclared => AgeRangeDeclaration.GuardianDeclared,
-        DARAgeRangeDeclaration.Confirmed => AgeRangeDeclaration.Confirmed,
-        _ => AgeRangeDeclaration.Unknown,
-    };
 }

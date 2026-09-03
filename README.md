@@ -83,14 +83,18 @@ src/DeclaredAgeRange/            The .NET package (net10.0/net9.0 × ios/macos)
 │   ApiDefinition.cs             Internal Objective-C bindings
 │   StructsAndEnums.cs           Internal native enums
 │   AgeRangeService.cs           Public async API
-│   AgeRange.cs                  Public models, enums, exception
+│   AgeRange.cs                  Public models and enums (pure managed)
+│   AgeRangeException.cs         Typed exception built from the bridge's NSError
+│   NativeMapping.cs             Native value → public type translation (pure managed)
 │   PlatformAnchorResolver.cs    Finds the window/view controller to present from
 native/                          Swift → Objective-C bridge, built into an xcframework
 │   DeclaredAgeRangeWrapper/DeclaredAgeRangeWrapper.swift
 │   DeclaredAgeRangeWrapper.xcodeproj
 │   Makefile                     `make` builds iOS, iOS Simulator and macOS slices
-samples/iOSSampleApp/            Minimal consumer
-.github/workflows/build.yml      Builds the xcframework, packs the NuGet, publishes on tag
+samples/iOSSampleApp/            Minimal iOS consumer
+samples/macOSSampleApp/          Minimal macOS consumer
+tests/DeclaredAgeRange.Tests/    xunit tests for the pure managed logic (run on any OS)
+.github/workflows/build.yml      Builds the xcframework, runs tests, packs the NuGet, publishes on tag
 ```
 
 ## Building
@@ -108,11 +112,31 @@ make -C native
 # 2. Build and pack the .NET package
 dotnet pack src/DeclaredAgeRange -c Release -o artifacts
 
-# 3. Run the sample on the Simulator (ad-hoc signed, no certificate needed; the API reports NotAvailable there)
-dotnet build samples/iOSSampleApp -t:Run
+# 3. Run the samples (ad-hoc signed, no certificate needed; without a profile the API reports NotAvailable)
+dotnet build samples/iOSSampleApp -t:Run          # iOS Simulator
+dotnet build samples/macOSSampleApp -t:Run        # this Mac
 
-# ...or on a device with the entitlement provisioned
+# ...or on hardware with the entitlement provisioned
 dotnet build samples/iOSSampleApp -t:Run -r ios-arm64
+dotnet build samples/macOSSampleApp -t:Run -p:CodesignKey="Apple Development" -p:CodesignProvision="<profile name>"
+```
+
+## Testing
+
+What can be verified without an Apple Developer account, and what cannot:
+
+| Layer | How | Status |
+|---|---|---|
+| Pure managed logic: bounds helpers, response types, native→public mapping, error classification | `dotnet test tests/DeclaredAgeRange.Tests` on any OS | Automated, runs in CI |
+| Full call path through the binding and Swift bridge into Apple's service | Run either sample with `--request-on-launch`; Apple answers `NotAvailable` when the app has no provisioning profile for the entitlement | Verified on the iOS 26 Simulator and on macOS |
+| Success path: Apple's sheet, `Sharing` / `DeclinedSharing`, declaration mapping | Physical device or Mac, app signed with a profile that carries the Declared Age Range capability | **Not yet verified.** Requires an Apple Developer Program membership |
+
+```bash
+dotnet test tests/DeclaredAgeRange.Tests
+
+# smoke test the whole stack without clicking anything
+xcrun simctl launch --console booted com.thelostpantheon.DeclaredAgeRangeSample --request-on-launch
+open -n samples/macOSSampleApp/bin/Debug/net10.0-macos/osx-arm64/macOSSampleApp.app --args --request-on-launch
 ```
 
 ## Using the package locally (before it is on nuget.org)
@@ -140,7 +164,7 @@ git tag v1.0.0 && git push --tags
 
 ## How it works
 
-Apple's API is Swift-only (`async`, enums with associated values), so .NET cannot call it directly. `DeclaredAgeRangeWrapper.swift` exposes an `@objc` class `DARAgeRangeService` whose static `requestAgeRange` method wraps the call and reports back through a completion block with plain `NSObject` types and an `NSError` in the `DARAgeRangeErrorDomain`. The bridge is built with a deployment target of iOS 13 / macOS 11 and weak-links `DeclaredAgeRange.framework`, so apps with a lower minimum OS still launch on older systems; the .NET side surfaces `AgeRangeService.IsSupported` for the runtime check.
+Apple's API is Swift-only (`async`, enums with associated values), so .NET cannot call it directly. `DeclaredAgeRangeWrapper.swift` exposes an `@objc` class `DARAgeRangeService` whose static `requestAgeRange` method wraps the call and reports back through a completion block with plain `NSObject` types and an `NSError` in the `DARAgeRangeErrorDomain`. The bridge is built with a deployment target of iOS 13 / macOS 12 and weak-links `DeclaredAgeRange.framework`, so apps with a lower minimum OS still launch on older systems; the .NET side surfaces `AgeRangeService.IsSupported` for the runtime check.
 
 The .NET project binds those Objective-C classes as `internal` types and layers a small managed API on top: a `TaskCompletionSource` turns the completion block into a `Task`, the call is marshalled to the main thread, `NSNumber` bounds become `int?`, and the `NSError` becomes an `AgeRangeException` with a typed `AgeRangeError`.
 

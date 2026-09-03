@@ -162,7 +162,7 @@ public class DARAgeRangeService: NSObject {
         switch code {
         case .notAvailable:
             message = "Declared Age Range is not available. It requires a physical device running iOS 26 or macOS 26 " +
-                      "and an app signed with the com.apple.developer.declared-age-range entitlement; the Simulator always reports this."
+                      "and an app signed with the com.apple.developer.declared-age-range entitlement; the iOS Simulator always reports this."
         case .invalidRequest:
             message = "The age range request was invalid. Check the age gates and that the app has the " +
                       "com.apple.developer.declared-age-range entitlement enabled for its App ID."

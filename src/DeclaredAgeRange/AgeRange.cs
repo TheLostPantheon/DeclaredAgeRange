@@ -1,6 +1,6 @@
-using Foundation;
-
 namespace DeclaredAgeRange;
+
+// Pure managed model types. No Apple dependencies, so they are unit-testable on any platform.
 
 /// <summary>
 /// The age range Apple shared for the signed-in user. Mirrors <c>AgeRangeService.AgeRange</c>.
@@ -57,7 +57,7 @@ public abstract record AgeRangeResponse
     }
 }
 
-/// <summary>Mirrors <c>AgeRangeService.Error</c>.</summary>
+/// <summary>Mirrors <c>AgeRangeService.Error</c>. Values match the native bridge's error codes.</summary>
 public enum AgeRangeError
 {
     /// <summary>An error this package could not classify. See the inner exception.</summary>
@@ -72,30 +72,4 @@ public enum AgeRangeError
     DeclinedOnboarding = 4,
     /// <summary>A network or server issue prevented completing the request.</summary>
     Network = 5,
-}
-
-/// <summary>Thrown when an age range request fails.</summary>
-public sealed class AgeRangeException : Exception
-{
-    /// <summary>The classified failure reason.</summary>
-    public AgeRangeError Error { get; }
-
-    /// <summary>Creates an exception with a classified <paramref name="error"/>, a message, and an optional underlying cause.</summary>
-    public AgeRangeException(AgeRangeError error, string message, Exception? innerException = null)
-        : base(message, innerException)
-    {
-        Error = error;
-    }
-
-    internal static AgeRangeException FromNSError(NSError? error)
-    {
-        if (error is null)
-            return new AgeRangeException(AgeRangeError.Unknown, "The age range request completed without a response or an error.");
-
-        var code = AgeRangeError.Unknown;
-        if (error.Domain == AgeRangeService.ErrorDomain && Enum.IsDefined(typeof(AgeRangeError), (int)error.Code))
-            code = (AgeRangeError)(int)error.Code;
-
-        return new AgeRangeException(code, error.LocalizedDescription, new NSErrorException(error));
-    }
 }

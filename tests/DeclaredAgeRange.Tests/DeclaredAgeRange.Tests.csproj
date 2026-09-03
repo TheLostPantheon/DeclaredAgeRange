@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Tests the pure managed logic of the package on plain .NET, no Apple SDK needed.
+    The source files are compiled in directly; ObjCRuntime's [Native] attribute is stubbed.
+    Everything that touches Foundation/UIKit/AppKit is covered by the samples on a device or simulator instead.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>DeclaredAgeRange.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../../src/DeclaredAgeRange/AgeRange.cs" Link="src/AgeRange.cs" />
+    <Compile Include="../../src/DeclaredAgeRange/NativeMapping.cs" Link="src/NativeMapping.cs" />
+    <Compile Include="../../src/DeclaredAgeRange/StructsAndEnums.cs" Link="src/StructsAndEnums.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1" />
+  </ItemGroup>
+</Project>
