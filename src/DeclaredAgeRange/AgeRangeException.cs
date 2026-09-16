@@ -1,9 +1,10 @@
-using Foundation;
-
 namespace DeclaredAgeRange;
 
+// The exception type itself is pure managed code so it can be unit-tested on any platform.
+// The NSError factory lives in AgeRangeException.Apple.cs, which needs Foundation.
+
 /// <summary>Thrown when an age range request fails.</summary>
-public sealed class AgeRangeException : Exception
+public sealed partial class AgeRangeException : Exception
 {
     /// <summary>The classified failure reason.</summary>
     public AgeRangeError Error { get; }
@@ -13,16 +14,5 @@ public sealed class AgeRangeException : Exception
         : base(message, innerException)
     {
         Error = error;
-    }
-
-    internal static AgeRangeException FromNSError(NSError? error)
-    {
-        if (error is null)
-            return new AgeRangeException(AgeRangeError.Unknown, "The age range request completed without a response or an error.");
-
-        return new AgeRangeException(
-            NativeMapping.ToError(error.Domain, (long)error.Code),
-            error.LocalizedDescription,
-            new NSErrorException(error));
     }
 }
