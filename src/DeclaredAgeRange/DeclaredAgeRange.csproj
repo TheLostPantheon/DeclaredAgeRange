@@ -29,9 +29,11 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
-    <!-- Minimum OS the *package* runs on. The API itself needs OS 26; AgeRangeService.IsSupported tells you at runtime. -->
+    <!-- Minimum OS the *package* runs on, matching the deployment targets the Swift bridge is built for
+         (native/DeclaredAgeRangeWrapper.xcodeproj). Keep the two in step. The API itself needs OS 26;
+         AgeRangeService.IsSupported tells you at runtime. -->
     <PropertyGroup Condition="$(TargetFramework.EndsWith('-ios'))">
-        <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
     </PropertyGroup>
     <PropertyGroup Condition="$(TargetFramework.EndsWith('-macos'))">
         <SupportedOSPlatformVersion>12.0</SupportedOSPlatformVersion>
