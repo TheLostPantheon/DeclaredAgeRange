@@ -59,12 +59,7 @@ public static class AgeRangeService
         PlatformAnchor? anchor,
         CancellationToken cancellationToken = default)
     {
-        if (ageGate <= 0)
-            throw new ArgumentOutOfRangeException(nameof(ageGate), ageGate, "Age gate must be a positive age.");
-        if (!IsSupported)
-            throw new AgeRangeException(AgeRangeError.NotAvailable,
-                "Declared Age Range is not available here. It requires a physical device running iOS 26 or macOS 26; " +
-                "the Simulator is not supported. Check AgeRangeService.IsSupported before calling.");
+        RequestValidation.Validate(ageGate, IsSupported);
 
         cancellationToken.ThrowIfCancellationRequested();
 

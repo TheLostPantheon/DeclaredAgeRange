@@ -14,3 +14,6 @@ xcuserdata/
 
 # macOS
 .DS_Store
+
+# Scratch copies of the samples used by the package smoke test in CI.
+.consumer-test/

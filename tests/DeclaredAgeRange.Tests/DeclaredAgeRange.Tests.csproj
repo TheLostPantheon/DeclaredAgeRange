@@ -16,6 +16,8 @@
     <Compile Include="../../src/DeclaredAgeRange/AgeRange.cs" Link="src/AgeRange.cs" />
     <Compile Include="../../src/DeclaredAgeRange/NativeMapping.cs" Link="src/NativeMapping.cs" />
     <Compile Include="../../src/DeclaredAgeRange/StructsAndEnums.cs" Link="src/StructsAndEnums.cs" />
+    <Compile Include="../../src/DeclaredAgeRange/AgeRangeException.cs" Link="src/AgeRangeException.cs" />
+    <Compile Include="../../src/DeclaredAgeRange/RequestValidation.cs" Link="src/RequestValidation.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -16,7 +16,10 @@ jobs:
       - name: Select Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          # Pinned deliberately. The .NET for iOS/macOS workload requires an exact major.minor Xcode
+          # and hard-errors otherwise (E0191), so `latest-stable` silently breaks release builds the
+          # day the runner image moves on. Bump this together with the workload.
+          xcode-version: '26.6'
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
@@ -41,6 +44,47 @@ jobs:
 
       - name: Pack DeclaredAgeRange
         run: dotnet pack src/DeclaredAgeRange -c Release -o artifacts -p:Version=${{ steps.version.outputs.value }}
+
+      # The samples reference the project directly, which reaches the xcframework on disk — that build
+      # stays green even if the packed .nupkg is broken. This consumes the real package as a user would.
+      - name: Smoke-test the package as a consumer
+        env:
+          PKG_VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          set -euo pipefail
+          rm -rf .consumer-test && mkdir -p .consumer-test
+          # Copied at the same depth as samples/, so each sample's other relative paths still resolve.
+          cp -R samples/iOSSampleApp samples/macOSSampleApp .consumer-test/
+          for proj in .consumer-test/*/*.csproj; do
+            sed -i.bak -E 's|<ProjectReference [^>]*DeclaredAgeRange\.csproj" ?/>|<PackageReference Include="DeclaredAgeRange" Version="'"$PKG_VERSION"'" />|' "$proj"
+            rm -f "$proj.bak"
+            if ! grep -q 'PackageReference Include="DeclaredAgeRange"' "$proj"; then
+              echo "::error::Failed to swap the project reference for a package reference in $proj"
+              exit 1
+            fi
+            if grep -q '<ProjectReference' "$proj"; then
+              echo "::error::A ProjectReference survived in $proj — the smoke test would not be testing the package"
+              exit 1
+            fi
+          done
+          SOURCES=(--source "$GITHUB_WORKSPACE/artifacts" --source https://api.nuget.org/v3/index.json)
+          dotnet build .consumer-test/iOSSampleApp -c Release -r iossimulator-arm64 "${SOURCES[@]}"
+          dotnet build .consumer-test/macOSSampleApp -c Release "${SOURCES[@]}"
+          # The native bridge must travel inside the package, not just alongside the project.
+          # Checked per sample under bin/ only: macOS emits several bundles (universal plus per-RID) and
+          # obj/ holds an intermediate codesign bundle that legitimately has no frameworks yet.
+          for sample in iOSSampleApp macOSSampleApp; do
+            app=$(find ".consumer-test/$sample/bin" -maxdepth 4 -name '*.app' | head -1)
+            if [ -z "$app" ]; then
+              echo "::error::$sample produced no .app bundle — the consumer build silently made no output"
+              exit 1
+            fi
+            if ! find "$app" -name 'DeclaredAgeRangeWrapper.framework' | grep -q .; then
+              echo "::error::$app is missing the native framework — the package does not carry the xcframework"
+              exit 1
+            fi
+            echo "verified native framework in $app"
+          done
 
       - name: Unit tests (pure managed logic)
         run: dotnet test tests/DeclaredAgeRange.Tests -c Release
@@ -69,7 +113,12 @@ jobs:
     needs: build
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    # Kept so the trusted publishing policy can later be narrowed to this environment,
+    # and so a manual approval gate can be added here without touching the workflow.
     environment: nuget
+    permissions:
+      id-token: write   # lets this job request the OIDC token nuget.org exchanges for a key
+      contents: read
     steps:
       - uses: actions/setup-dotnet@v4
         with:
@@ -80,9 +129,18 @@ jobs:
           name: DeclaredAgeRange.nupkg
           path: artifacts
 
+      # Trusted publishing: swaps this workflow's signed OIDC token for an API key that is valid for
+      # one hour and usable once, so no long-lived NuGet key is ever stored in this repository.
+      # Must sit immediately before the push — request it early and it can expire first.
+      - name: NuGet login (OIDC)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: TheLostPantheon   # nuget.org profile name, not an email address
+
       - name: Push to nuget.org
         run: >
           dotnet nuget push "artifacts/*.nupkg"
-          --api-key "${{ secrets.NUGET_API_KEY }}"
+          --api-key "${{ steps.login.outputs.NUGET_API_KEY }}"
           --source https://api.nuget.org/v3/index.json
           --skip-duplicate

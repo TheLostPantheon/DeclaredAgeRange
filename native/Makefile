@@ -1,5 +1,12 @@
 # Makefile to build DeclaredAgeRangeWrapper.xcframework via archive (with dSYMs)
 
+# Recipes run under bash so each archive can set pipefail inline. Without it, piping xcodebuild
+# through sed hides a failed archive (make only sees sed's status), and the build fails much later
+# with a confusing "path does not point to a valid framework" from -create-xcframework.
+# pipefail is set per-recipe rather than via .SHELLFLAGS because macOS ships GNU make 3.81,
+# which ignores .SHELLFLAGS entirely.
+SHELL := /bin/bash
+
 # Configuration
 PROJECT := DeclaredAgeRangeWrapper.xcodeproj
 SCHEME  := DeclaredAgeRangeWrapper
@@ -48,7 +55,7 @@ xcframework: clean_build_dirs init archive-ios archive-sim archive-macos
 # Archive iOS (device)
 archive-ios:
 	@echo "Archiving $(SCHEME) for iOS (iphoneos) with dSYMs..."
-	@xcodebuild archive \
+	@set -o pipefail; xcodebuild archive \
 		-project "$(PROJECT)" \
 		-scheme "$(SCHEME)" \
 		-configuration "$(CONFIG)" \
@@ -63,7 +70,7 @@ archive-ios:
 # Archive iOS Simulator
 archive-sim:
 	@echo "Archiving $(SCHEME) for iOS Simulator (iphonesimulator) with dSYMs..."
-	@xcodebuild archive \
+	@set -o pipefail; xcodebuild archive \
 		-project "$(PROJECT)" \
 		-scheme "$(SCHEME)" \
 		-configuration "$(CONFIG)" \
@@ -78,7 +85,7 @@ archive-sim:
 # Archive macOS
 archive-macos:
 	@echo "Archiving $(SCHEME) for macOS (macosx) with dSYMs..."
-	@xcodebuild archive \
+	@set -o pipefail; xcodebuild archive \
 		-project "$(PROJECT)" \
 		-scheme "$(SCHEME)" \
 		-configuration "$(CONFIG)" \
